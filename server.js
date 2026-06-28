@@ -5,6 +5,7 @@ require('dotenv').config();
 const playersRouter = require('./routes/players');
 const leaderboardRouter = require('./routes/leaderboard');
 const paymentsRouter = require('./routes/payments');
+const slotsRouter = require('./routes/slots');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use('/api/players', playersRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/slots', slotsRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', project: 'FrankenJack Backend' });
