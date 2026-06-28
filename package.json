@@ -1,0 +1,28 @@
+{
+  "name": "frankenapps-frankenlabs-frankenjack-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FrankenApps-FrankenLabs/FrankenApps-FrankenLabs-frankenjack-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/FrankenApps-FrankenLabs/FrankenApps-FrankenLabs-frankenjack-backend/issues"
+  },
+  "homepage": "https://github.com/FrankenApps-FrankenLabs/FrankenApps-FrankenLabs-frankenjack-backend#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ethers": "^6.17.0",
+    "express": "^5.2.1"
+  }
+}
