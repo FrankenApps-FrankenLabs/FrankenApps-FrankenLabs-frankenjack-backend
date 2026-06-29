@@ -144,5 +144,50 @@ router.post('/sitdown', async (req, res) => {
     res.status(500).json({ error: 'Sit-down failed' });
   }
 });
+// Promo code redemption
+const PROMO_CODES = {
+  '50FREE': 50,
+};
 
+router.post('/promo', async (req, res) => {
+  const { wallet, code } = req.body;
+  if (!wallet || !code) return res.status(400).json({ error: 'Missing wallet or code' });
+
+  const upperCode = code.toUpperCase().trim();
+  const amount = PROMO_CODES[upperCode];
+
+  if (!amount) return res.status(400).json({ error: 'Invalid promo code' });
+
+  try {
+    const { data: player } = await supabase
+      .from('fj_players')
+      .select('tokens')
+      .eq('wallet', wallet.toLowerCase())
+      .single();
+
+    const newTokens = (player?.tokens || 0) + amount;
+
+    const { data, error } = await supabase
+      .from('fj_players')
+      .update({ tokens: newTokens, updated_at: new Date().toISOString() })
+      .eq('wallet', wallet.toLowerCase())
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await supabase.from('fj_transactions').insert([{
+      wallet: wallet.toLowerCase(),
+      type: 'promo',
+      amount,
+      lcai_paid: 0,
+      tx_hash: `promo_${upperCode}_${Date.now()}`
+    }]);
+
+    res.json({ success: true, tokens: data.tokens, amount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Promo redemption failed' });
+  }
+});
 module.exports = router;
