@@ -7,6 +7,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
+const ADMIN_WALLETS = [
+  '0x7fe522ab4f456cfc41fe7a7a0c94f28801cca8fc'
+];
+
 // GET top 10 leaderboard
 router.get('/', async (req, res) => {
   try {
@@ -15,7 +19,6 @@ router.get('/', async (req, res) => {
       .select('*')
       .order('biggest_chip_stack', { ascending: false })
       .limit(10);
-
     if (error) throw error;
     res.json(data);
   } catch (err) {
@@ -24,7 +27,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT update player leaderboard stats
+// PUT update player leaderboard stats — skip for admin
 router.put('/update', async (req, res) => {
   const {
     wallet,
@@ -35,6 +38,10 @@ router.put('/update', async (req, res) => {
     biggest_chip_stack,
     total_hands
   } = req.body;
+
+  if (ADMIN_WALLETS.includes(wallet.toLowerCase())) {
+    return res.json({ skipped: true, reason: 'admin wallet excluded from leaderboard' });
+  }
 
   try {
     const { data: existing } = await supabase
@@ -58,12 +65,10 @@ router.put('/update', async (req, res) => {
         .eq('wallet', wallet.toLowerCase())
         .select()
         .single();
-
       if (error) throw error;
       return res.json(data);
     }
 
-    // Create new leaderboard entry
     const { data, error } = await supabase
       .from('fj_leaderboard')
       .insert([{
@@ -77,7 +82,6 @@ router.put('/update', async (req, res) => {
       }])
       .select()
       .single();
-
     if (error) throw error;
     res.json(data);
   } catch (err) {
